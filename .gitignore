@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env.local
+.impeccable/decision.json
+.impeccable/brief.md
+.impeccable/mocks/
+.impeccable/review/

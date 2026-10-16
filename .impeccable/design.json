@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-16T15:14:08+08:00",
+  "title": "Design System: Weils Monitor",
+  "extensions": {
+    "colorMeta": {
+      "deep-sea": { "role": "neutral", "displayName": "Deep Sea", "canonical": "#102238" },
+      "signal-teal": { "role": "primary", "displayName": "Signal Teal", "canonical": "#30988f" },
+      "anomaly-terracotta": { "role": "secondary", "displayName": "Anomaly Terracotta", "canonical": "#d5795c" },
+      "caution-amber": { "role": "tertiary", "displayName": "Caution Amber", "canonical": "#dcae56" },
+      "mineral-ground": { "role": "neutral", "displayName": "Mineral Ground", "canonical": "#edf2ef" },
+      "paper": { "role": "neutral", "displayName": "Paper", "canonical": "#fff" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Main page title." },
+      "headline": { "displayName": "Headline", "purpose": "Analytical panel titles." },
+      "metric": { "displayName": "Metric", "purpose": "High priority tabular readings." },
+      "body": { "displayName": "Body", "purpose": "Controls, tables, and supporting copy." },
+      "label": { "displayName": "Label", "purpose": "Legends, metadata, and captions." }
+    },
+    "shadows": [
+      { "name": "panel-ambient", "value": "0 9px 26px rgba(16, 39, 48, 0.03)", "purpose": "Subtle separation of analytical panels from mineral ground." },
+      { "name": "selected-role", "value": "0 3px 8px rgba(5, 19, 31, 0.17)", "purpose": "Selected role segment in the dark navigation rail." },
+      { "name": "dialog", "value": "0 25px 80px rgba(7, 28, 38, 0.24)", "purpose": "Elevate the connection dialog above the backdrop." }
+    ],
+    "motion": [
+      { "name": "navigation-state", "value": "background 0.18s ease, color 0.18s ease", "purpose": "Rail item hover transition." },
+      { "name": "mobile-rail", "value": "transform 0.22s ease", "purpose": "Slide the rail into view below 920px." },
+      { "name": "reduced-motion", "value": "0.01ms", "purpose": "Disable meaningful animation and transitions when requested." }
+    ],
+    "breakpoints": [
+      { "name": "compact-desktop", "value": "1200px" },
+      { "name": "stacked", "value": "920px" },
+      { "name": "phone", "value": "640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The filled action used for connecting or recovery.",
+      "html": "<button class=\"ds-primary-button\">连接数据源</button>",
+      "css": ".ds-primary-button{border:0;background:#257a74;color:#fff;border-radius:8px;padding:11px 17px;font:800 12px 'Noto Sans SC','Microsoft YaHei',sans-serif;cursor:pointer}.ds-primary-button:hover{background:#246f69}.ds-primary-button:focus-visible{outline:3px solid #62b9af;outline-offset:2px}.ds-primary-button:disabled{opacity:.55;cursor:not-allowed}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "The lighter toolbar action.",
+      "html": "<button class=\"ds-outline-button\">刷新数据</button>",
+      "css": ".ds-outline-button{border:1px solid #cfded9;background:#fff;color:#435f69;border-radius:8px;padding:10px 14px;font:700 12px 'Noto Sans SC','Microsoft YaHei',sans-serif;cursor:pointer}.ds-outline-button:hover{background:#f6fbf8;border-color:#a9c7bd}.ds-outline-button:focus-visible{outline:3px solid #62b9af;outline-offset:2px}"
+    },
+    {
+      "name": "Active Navigation Item",
+      "kind": "nav",
+      "refersTo": "navigation-active",
+      "description": "Selected destination within the deep navy rail.",
+      "html": "<nav class=\"ds-rail\"><a class=\"ds-nav-item\" href=\"#\">监控总览</a></nav>",
+      "css": ".ds-rail{background:#102238;padding:15px}.ds-nav-item{display:block;background:#2c746f;color:#fff;border-radius:10px;padding:12px 14px;text-decoration:none;font:650 13px 'Noto Sans SC','Microsoft YaHei',sans-serif;transition:background .18s ease,color .18s ease}.ds-nav-item:hover{background:#1e3c4d}.ds-nav-item:focus-visible{outline:3px solid #62b9af;outline-offset:2px}"
+    },
+    {
+      "name": "Analysis Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "A quiet surface for charts, rankings, and tables.",
+      "html": "<section class=\"ds-panel\"><h2>事件信号</h2><p>访问与错误沿同一时间轴变化</p></section>",
+      "css": ".ds-panel{background:#fff;border:1px solid #dce7e3;border-radius:14px;padding:23px 25px;box-shadow:0 9px 26px rgba(16,39,48,.03);color:#173044}.ds-panel h2{font:700 16px 'Noto Serif SC','Noto Sans SC',serif;letter-spacing:-.01em;margin:0 0 7px}.ds-panel p{font:11px 'Noto Sans SC','Microsoft YaHei',sans-serif;color:#526b72;margin:0}"
+    },
+    {
+      "name": "Event Tag",
+      "kind": "chip",
+      "refersTo": "tag-default",
+      "description": "Compact semantic label in the event table.",
+      "html": "<span class=\"ds-event-tag\">性能</span>",
+      "css": ".ds-event-tag{display:inline-block;padding:5px 7px;border-radius:4px;background:#e9f3ef;color:#246f69;font:800 10px 'Noto Sans SC','Microsoft YaHei',sans-serif}"
+    },
+    {
+      "name": "Token Field",
+      "kind": "input",
+      "refersTo": "token-input",
+      "description": "Connection dialog text field.",
+      "html": "<input class=\"ds-token-input\" type=\"password\" placeholder=\"管理查询令牌\" />",
+      "css": ".ds-token-input{width:100%;border:1px solid #cfded8;background:#fbfdfb;padding:12px;border-radius:8px;color:#1f3948;font:12px 'Noto Sans SC','Microsoft YaHei',sans-serif}.ds-token-input:focus{border-color:#52a99f}.ds-token-input:focus-visible{outline:3px solid #62b9af;outline-offset:2px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Observability Atlas",
+    "overview": "The workspace resembles a calm instrument panel: a deep sea navigation rail frames pale mineral surfaces, while colored data signals carry the visual urgency. Serif headings give each analytical section a clear title; condensed numerals make high density readings easy to compare.\n\nThe visual system supports the product's need to distinguish live results from demonstration data and to move between engineering and product views. It favors labeled charts, visible data state, thin measurement lines, and restrained depth.",
+    "keyCharacteristics": [
+      "Deep navy navigation against mineral gray ground and white analysis surfaces.",
+      "Teal for normal activity, terracotta for errors, amber for caution or demonstration state.",
+      "Compact labels, tabular numerals, and generous space around major charts.",
+      "Labeled visualizations with fine guides and restrained panel chrome."
+    ],
+    "rules": [
+      { "name": "The Signal Role Rule", "body": "Use teal for activity or healthy states, terracotta for errors, and amber for caution. Keep the chart legend and related readings consistent with those roles.", "section": "colors" },
+      { "name": "The Numeric Scan Rule", "body": "Use tabular numerals for metrics, timestamps, route counts, and tables so changing values retain alignment.", "section": "typography" }
+    ],
+    "dos": [
+      "Do preserve a visible distinction between demo and live data in the toolbar and notices.",
+      "Do give primary analytical content enough room for labels and comparison.",
+      "Do preserve chart and table labels at narrow widths through stacking or horizontal table scroll."
+    ],
+    "donts": [
+      "Don't use the anomaly terracotta as a generic action color.",
+      "Don't replace quiet panel borders with heavy shadows; reserve strong elevation for a dialog.",
+      "Don't scatter related headline readings across unrelated visual containers."
+    ]
+  }
+}
