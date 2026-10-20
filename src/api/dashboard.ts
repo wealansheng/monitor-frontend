@@ -1,31 +1,54 @@
-import type { MonitorApp, Overview } from '../types'
+import type {
+  MonitorApp,
+  MonitorEventDetail,
+  MonitorEventPage,
+  Overview,
+  SymbolicationResult,
+} from "../types";
+import { apiError, http } from "./http";
 
-const base = '/api/v1/dashboard'
+interface ApiResult {
+  ok: boolean;
+  error?: string;
+}
 
-async function get<T>(path: string, token: string): Promise<T> {
-  const response = await fetch(`${base}${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-    cache: 'no-store',
-  })
-  let payload: { ok?: boolean; error?: string } & T
+/** 发送查询请求，校验统一的响应信封并转成调用方可读的错误。 */
+async function get<T>(
+  path: string,
+  params?: Record<string, string | number>,
+): Promise<T> {
   try {
-    payload = await response.json() as typeof payload
-  } catch {
-    throw new Error('数据服务返回了无法读取的响应')
+    const response = await http.get<ApiResult & T>(path, { params });
+    if (!response.data?.ok) {
+      throw new Error(response.data?.error || "数据服务返回了无效响应");
+    }
+    return response.data;
+  } catch (error) {
+    throw apiError(error);
   }
-  if (!response.ok || !payload.ok) {
-    if (response.status === 401) throw new Error('访问令牌无效，请重新连接')
-    if (response.status === 404) throw new Error('查询接口未启用，请在后端设置 MONITOR_DASHBOARD_TOKEN')
-    throw new Error(payload.error || `查询失败 (${response.status})`)
-  }
-  return payload
 }
 
-export async function fetchApps(token: string): Promise<MonitorApp[]> {
-  const result = await get<{ apps: MonitorApp[] }>('/apps', token)
-  return result.apps
+export async function getApps(): Promise<MonitorApp[]> {
+  const result = await get<{ apps: MonitorApp[] }>("/apps");
+  return result.apps;
 }
 
-export async function fetchOverview(token: string, appId: string, hours: number): Promise<Overview> {
-  return get<Overview>(`/overview?app_id=${encodeURIComponent(appId)}&hours=${hours}`, token)
+export function getOverview(appId: string, hours: number): Promise<Overview> {
+  return get<Overview>("/overview", { app_id: appId, hours });
+}
+
+export function getEvents(
+  params: Record<string, string | number>,
+): Promise<MonitorEventPage> {
+  return get<MonitorEventPage>("/events", params);
+}
+
+export function getEvent(
+  params: Record<string, string | number>,
+): Promise<MonitorEventDetail> {
+  return get<MonitorEventDetail>("/event", params);
+}
+
+export function getSymbolication(appId: string, eventId: string): Promise<SymbolicationResult> {
+  return get<SymbolicationResult>(`/errors/${encodeURIComponent(eventId)}/symbolication`, { app_id: appId });
 }

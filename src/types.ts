@@ -49,6 +49,42 @@ export interface MonitorEvent {
   detail: string
 }
 
+export interface MonitorEventPage {
+  events: MonitorEvent[]
+  total: number
+  limit: number
+  offset: number
+  hasMore: boolean
+}
+
+export type EventCategory = 'error' | 'behavior' | 'performance'
+
+export interface MonitorEventDetail {
+  appId: string
+  eventId: string
+  category: EventCategory
+  event: Record<string, unknown>
+}
+
+export interface SymbolicatedFrame {
+  raw: string
+  label: string
+  status: string
+  generated?: { filename: string; line: number; column: number }
+  original?: { source: string; line: number; column: number; name?: string }
+  context?: { start_line: number; lines: string[] }
+}
+
+export interface SymbolicationResult {
+  event_id: string
+  app_id: string
+  release: string
+  status: 'mapped' | 'partial' | 'unmapped'
+  reason?: string
+  stack: string
+  frames: SymbolicatedFrame[]
+}
+
 export interface Overview {
   appId: string
   from: number
@@ -73,3 +109,12 @@ export interface Overview {
 
 export type ViewKey = 'overview' | 'errors' | 'performance' | 'behavior' | 'events'
 export type RoleKey = 'engineering' | 'product'
+export type DataSourceMode = 'demo' | 'live'
+export type EventTypeKey =
+  | 'error'
+  | 'stability'
+  | 'performance'
+  | 'request'
+  | 'resource'
+  | 'behavior'
+export type EventTypeFilter = EventTypeKey | 'all'

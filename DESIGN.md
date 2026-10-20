@@ -186,6 +186,12 @@ Panels and metric groups use gently curved 14px corners. Controls use 8px, rail 
 - **Trend:** teal visits and terracotta errors share a time axis with separate scales. Small dots and direct labels keep the legend quiet.
 - **Status and event tags:** compact fills and text colors match the underlying meaning; error and stability tags use terracotta tones.
 
+### Error source context
+
+- Source frames extend the existing event-detail panels: an ordered button list beside a scrollable code excerpt, stacked on narrow screens. The first mapped frame is selected initially.
+- Code uses 12px Consolas/monospace with tab size 4 and visible line numbers. The error row reuses the existing error-tag background `#fbebe6`; its column marker and error text reuse error ink `#9c4b37`, with white text on the marker. Focus uses action teal; source code is rendered as text.
+- Loading, retry, missing-map, missing-source and demo states stay inside the source panel, independent of the event fields.
+
 ## Do's and Don'ts
 
 ### Do:
