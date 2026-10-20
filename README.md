@@ -29,7 +29,7 @@ npm install
 npm run dev
 ```
 
-默认访问 `http://localhost:8866`。Vite 将 `/api` 代理到 `http://localhost:8888`，也可在 `.env.local` 中设置 `MONITOR_BACKEND_URL=https://forum.wealans.top:8888` 指向线上后端（可从 `.env.example` 复制；修改后需重启开发服务器）。线上 8888 端口使用 HTTPS。首次进入显示明确标识的演示数据；点击“连接数据源”，输入后端的管理查询令牌，即可读取真实应用。令牌只保存在当前标签页的 `sessionStorage`，关闭标签页后失效，不会打包进代码。
+默认访问 `http://localhost:8866`。Vite 将 `/api` 代理到 `http://localhost:8888`，也可在 `.env.local` 中设置 `MONITOR_BACKEND_URL=https://xxx.xxxxxxx.xxx:8888` 指向线上后端（可从 `.env.example` 复制；修改后需重启开发服务器）。线上 8888 端口使用 HTTPS。首次进入显示明确标识的演示数据；点击“连接数据源”，输入后端的管理查询令牌，即可读取真实应用。令牌只保存在当前标签页的 `sessionStorage`，关闭标签页后失效，不会打包进代码。
 
 生产部署需要将同源 `/api/v1/dashboard` 转发到后端，并在部署入口提供访问控制。路由使用 HTML5 History 模式：部署入口必须把所有未命中静态文件的路径重写到 `index.html`（例如 nginx `try_files $uri $uri/ /index.html;`），否则直接访问 `/errors` 等地址会 404；`npm run dev` 与 `npm run preview` 已内置该回退。若工作台部署在子路径下，需同时设置 Vite 的 `base`，路由会自动读取 `import.meta.env.BASE_URL`。不要将管理查询令牌放进 `VITE_` 环境变量。可复制 `.env.example` 配置开发代理的后端地址。业务应用的 SDK 上报仍由各自应用配置，管理平台不调用 `/api/v1/monitor`。
 
