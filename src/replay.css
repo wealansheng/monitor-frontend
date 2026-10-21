@@ -1,0 +1,29 @@
+.record-filters { display:flex; align-items:end; flex-wrap:wrap; gap:14px; padding:0 25px 22px; }
+.record-filters label { display:flex; flex:1 1 160px; flex-direction:column; gap:7px; color:var(--muted, #607783); }
+.record-filters input, .replay-controls select { min-height:39px; border:1px solid #dce7e3; border-radius:8px; background:#fff; color:#173044; padding:8px 11px; font:inherit; }
+.record-filters input:focus-visible, .replay-controls select:focus-visible, .replay-progress input:focus-visible { outline:3px solid #30988f; outline-offset:2px; }
+.records-panel .notice { margin:0 25px 20px; }
+.record-identity { max-width:240px; overflow-wrap:anywhere; }
+.record-identity small { display:block; color:#607783; margin-top:5px; }
+.record-pagination { display:flex; justify-content:flex-end; align-items:center; gap:15px; padding:18px 25px; font-variant-numeric:tabular-nums; }
+.replay-panel { padding:23px 25px; }
+.replay-panel .panel-heading { padding:0 0 20px; }
+.replay-viewport { position:relative; width:100%; overflow:hidden; min-height:180px; background:#edf2ef; border-radius:8px; }
+.replay-viewport .replayer-wrapper { position:relative; }
+.replay-viewport iframe { border:0; display:block; }
+.replay-viewport.replay-inspect { overflow:auto; max-height:60vh; scrollbar-color:#607783 #edf2ef; }
+.replay-viewport:focus-visible { outline:3px solid #30988f; outline-offset:2px; }
+.replay-controls { display:flex; align-items:center; gap:14px; padding-top:20px; font-variant-numeric:tabular-nums; }
+.replay-progress { display:flex; flex:1; min-width:80px; }
+.replay-progress input { width:100%; accent-color:#257a74; cursor:pointer; }
+.replay-markers { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin-top:22px; }
+.replay-markers strong { color:#9c4b37; margin-right:8px; }
+.replay-panel .notice { margin-bottom:18px; }
+@media (max-width:640px) {
+  .record-filters { padding:0 17px 18px; }
+  .record-filters label { flex-basis:100%; }
+  .replay-panel { padding:20px 17px; }
+  .replay-controls { flex-wrap:wrap; gap:10px; }
+  .replay-progress { order:3; flex-basis:100%; }
+  .record-pagination { padding:16px; justify-content:space-between; }
+}

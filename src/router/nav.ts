@@ -9,6 +9,7 @@ export interface NavItem {
 
 /** 导航与路由元信息的唯一来源：标签、地址和页面说明都在这里维护。 */
 export const NAV_ITEMS: readonly NavItem[] = [
+  { key: 'records', path: '/records', label: '操作回放', subtitle: () => '查看错误前后的页面与操作记录。' },
   {
     key: "overview",
     path: "/overview",

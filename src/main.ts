@@ -8,3 +8,4 @@ import "@fontsource/barlow-semi-condensed/latin-700.css";
 import "./style.css";
 
 createApp(App).use(router).mount("#app");
+import './replay.css'

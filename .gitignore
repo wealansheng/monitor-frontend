@@ -5,3 +5,6 @@ dist/
 .impeccable/brief.md
 .impeccable/mocks/
 .impeccable/review/
+test-results/
+playwright-report/
+.impeccable/review/

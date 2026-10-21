@@ -107,7 +107,7 @@ export interface Overview {
   recentEvents: MonitorEvent[]
 }
 
-export type ViewKey = 'overview' | 'errors' | 'performance' | 'behavior' | 'events'
+export type ViewKey = 'overview' | 'errors' | 'performance' | 'behavior' | 'events' | 'records'
 export type RoleKey = 'engineering' | 'product'
 export type DataSourceMode = 'demo' | 'live'
 export type EventTypeKey =

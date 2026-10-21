@@ -15,6 +15,7 @@ import {
   Menu,
   MousePointer2,
   RefreshCw,
+  Play,
   Settings2,
   ShieldAlert,
   X,
@@ -25,6 +26,7 @@ import type { ViewKey } from "./types";
 import { formatTime } from "./utils/format";
 
 const navIcons: Record<ViewKey, typeof Activity> = {
+  records: Play,
   overview: LayoutDashboard,
   errors: ShieldAlert,
   performance: Activity,
@@ -60,7 +62,8 @@ const {
 
 const head = computed(() => pageHeadFor(route.name, route.meta, role.value));
 const view = computed<ViewKey>(() => head.value.navKey);
-const isEventDetail = computed(() => route.name === "event-detail");
+const isEventDetail = computed(() => route.name === "event-detail" || route.name === 'record-detail');
+const requiresOverview = computed(() => !isEventDetail.value && view.value !== 'records');
 
 function navigate(key: ViewKey) {
   void router.push({ name: key });
@@ -223,13 +226,13 @@ onBeforeUnmount(disposeDashboard);
           </button>
         </div>
 
-        <div v-if="!isEventDetail && loading && !data" class="empty-state">
+        <div v-if="requiresOverview && loading && !data" class="empty-state">
           <RefreshCw :size="28" class="spinning" />
           <h2>正在读取监控数据</h2>
           <p>聚合查询完成后会显示所选应用的指标。</p>
         </div>
         <div
-          v-else-if="!isEventDetail && (!data || !hasData)"
+          v-else-if="requiresOverview && (!data || !hasData)"
           class="empty-state"
         >
           <Database :size="30" />

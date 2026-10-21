@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import { AlertCircle, ArrowLeft, RefreshCw } from "@lucide/vue";
 import { useEventDetail } from "../composables/useEventDetail";
 import SourceLocationPanel from "../components/SourceLocationPanel.vue";
+import ErrorReplayPanel from '../components/ErrorReplayPanel.vue';
 import {
   buildEventDetailGroups,
   buildEventSummary,
@@ -53,6 +54,7 @@ function backToEvents() {
   </div>
   <template v-else-if="detail">
     <SourceLocationPanel :detail="detail" />
+    <ErrorReplayPanel :detail="detail" />
     <section
       v-for="group in groups"
       :key="group.title"

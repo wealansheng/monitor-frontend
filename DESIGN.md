@@ -192,6 +192,15 @@ Panels and metric groups use gently curved 14px corners. Controls use 8px, rail 
 - Code uses 12px Consolas/monospace with tab size 4 and visible line numbers. The error row reuses the existing error-tag background `#fbebe6`; its column marker and error text reuse error ink `#9c4b37`, with white text on the marker. Focus uses action teal; source code is rendered as text.
 - Loading, retry, missing-map, missing-source and demo states stay inside the source panel, independent of the event fields.
 
+## Replay inspection
+
+- The recording list and detail extend the existing analysis panels; they do not add a new palette, type family or visual shell. Lists expose completeness, identity, route and error count before opening a recording.
+- The recorded page sits inside a contained viewport. Fit-to-window is the default; actual size, 150% and 200% allow scrolling within a focusable viewport capped at 60vh. The working page must not acquire horizontal overflow from the recorded frame.
+- Playback starts paused. Seeking and error-marker navigation pause playback. Play/pause, progress, elapsed time, speed and size controls stay outside the recorded page and wrap on narrow screens.
+- Error links preserve the error UUID and position the player at its timestamp. Teal remains the action color; terracotta remains error context. Playback times use tabular numerals.
+- Loading, retry, incomplete/corrupt data, insufficient context and synthetic demo notices remain explicit and outside the replay iframe. The existing source-context panel and the replay panel show independent loading/error states.
+- The shipped surface contract is recorded in [the replay brief](.impeccable/surfaces/replay.md); behavior and data requirements are in [the replay guide](docs/replay.md).
+
 ## Do's and Don'ts
 
 ### Do:

@@ -3,6 +3,7 @@ import type { ViewKey } from "../types";
 import { NAV_ITEMS } from "./nav";
 
 const viewLoaders = {
+  records: () => import('../views/RecordsView.vue'),
   overview: () => import("../views/OverviewView.vue"),
   errors: () => import("../views/ErrorsView.vue"),
   performance: () => import("../views/PerformanceView.vue"),
@@ -19,6 +20,12 @@ export const router = createRouter({
       name: item.key,
       component: viewLoaders[item.key],
     })),
+    {
+      path: '/records/:recordId',
+      name: 'record-detail',
+      component: () => import('../views/RecordDetailView.vue'),
+      meta: { navKey: 'records', title: '操作回放', subtitle: '还原错误发生前后的操作与页面变化。' },
+    },
     {
       path: "/events/:eventId",
       name: "event-detail",
