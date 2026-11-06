@@ -5,17 +5,17 @@ import { gzipSync } from 'node:zlib'
 import { createHash } from 'node:crypto'
 
 const hash = (value: string) => createHash('sha256').update(value).digest('hex')
-async function live(page: import('@playwright/test').Page, record: ReturnType<typeof demoRecord>, chunks: unknown[] = []) {
+async function live(page: import('@playwright/test').Page, record: ReturnType<typeof demoRecord>, chunks: unknown[] = [], category = 'error', eventId = record.errors[0]?.event_id ?? '84444444-4444-4444-8444-444444444444') {
   await page.addInitScript(() => sessionStorage.setItem('weils-dashboard-token', 'test'))
   await page.route('**/api/v1/dashboard/**', async route => {
     const url = new URL(route.request().url()); let response: unknown = { ok: true }
     if (url.pathname.endsWith('/apps')) response = { ok: true, apps: [{ appId: 'app', projectName: '测试应用', events: 1, lastSeen: Date.now() }] }
     else if (url.pathname.endsWith('/overview')) response = { ok: true, appId: 'app', hours: 24, summary: { pageViews: 0, visitors: 0, sessions: 0, errors: 0, stabilityIssues: 0, requests: 0, failedRequests: 0 }, timeline: [], vitals: [], errorTypes: [], issues: [], routes: [], recentEvents: [] }
     else if (url.pathname.endsWith('/chunks')) response = { ok: true, chunks, total: chunks.length, hasMore: false }
-    else if (/\/errors\/.+\/records$/.test(url.pathname)) response = { ok: true, records: [record], total: 1, hasMore: false }
+    else if (/\/(errors|events)\/.+\/records$/.test(url.pathname)) response = { ok: true, records: [record], total: 1, hasMore: false }
     else if (url.pathname.endsWith('/records')) response = { ok: true, records: [record], total: 1, hasMore: false }
     else if (url.pathname.includes('/records/')) response = { ok: true, record }
-    else if (url.pathname.endsWith('/event')) response = { ok: true, appId: 'app', eventId: record.errors[0].event_id, category: 'error', event: { event_type: 'error', error_type: 'js_error', message: 'Test error' } }
+    else if (url.pathname.endsWith('/event')) response = { ok: true, appId: 'app', eventId, category, event: category === 'error' ? { event_type: 'error', error_type: 'js_error', message: 'Test error' } : { event_type: 'behavior', action: '提交订单' } }
     else if (url.pathname.endsWith('/symbolication')) response = { ok: true, status: 'unmapped', frames: [] }
     await route.fulfill({ json: response })
   })
@@ -87,4 +87,32 @@ test('rejects corrupt data before constructing a player', async ({ page }) => {
   await page.goto(`/records/${record.record_id}`)
   await expect(page.getByRole('alert')).toContainText('校验失败')
   await expect(page.locator('.replay-viewport iframe')).toHaveCount(0)
+})
+
+test('behavior details open custom markers and show retained recordings from their start', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  const record = demoRecord('app'); const eventId = record.errors[0].event_id
+  record.errors = []; record.triggers = [{ type: 'custom', event_id: eventId, timestamp: record.started_at + 5000, action: '提交订单' }]
+  record.linked_event_ids = [eventId]; record.chunk_count = 1
+  const raw = JSON.stringify(demoEvents(record.started_at)); const payload = gzipSync(raw).toString('base64')
+  Object.assign(record, { raw_bytes: Buffer.byteLength(raw), encoded_bytes: payload.length, checksum: hash(payload) })
+  const { status: _s, received_chunks: _r, ...metadata } = record
+  const chunks = [{ ...metadata, chunk_index: 0, chunk_checksum: hash(payload), payload }]
+  await live(page, record, chunks, 'behavior', eventId)
+  await page.goto(`/events/${eventId}?type=behavior`)
+  await expect(page.getByRole('link', { name: /播放行为现场/ })).toBeVisible()
+  await page.screenshot({ path: '.impeccable/review/behavior-detail-desktop.png', fullPage: true })
+  await page.setViewportSize({ width: 390, height: 844 })
+  await expect.poll(() => page.locator('.sidebar').evaluate(element => element.getBoundingClientRect().right <= 1)).toBe(true)
+  await page.screenshot({ path: '.impeccable/review/behavior-detail-mobile.png', fullPage: true })
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  await page.getByRole('link', { name: /播放行为现场/ }).click()
+  await expect(page.getByLabel('回放进度')).toHaveValue('5000')
+  await expect(page.getByRole('button', { name: /点击 1 · 提交订单/ })).toBeVisible()
+  record.triggers = [{ type: 'pagehide', timestamp: record.ended_at }]
+  chunks[0].triggers = record.triggers
+  await page.reload()
+  await expect(page.getByText('这是本次事件触发补传的旧页面录制', { exact: false })).toBeVisible()
+  await expect(page.getByLabel('回放进度')).toHaveValue('0')
+  await expect(page.getByRole('button', { name: /页面退出 1/ })).toBeVisible()
 })

@@ -14,6 +14,7 @@ async function get<T>(path: string, params: Record<string, string | number>, sig
 }
 export const getRecords = (params: Record<string, string | number>, signal?: AbortSignal) => get<RecordPage>('/records', params, signal)
 export const getErrorRecords = (appId: string, eventId: string, signal?: AbortSignal) => get<RecordPage>(`/errors/${encodeURIComponent(eventId)}/records`, { app_id: appId }, signal)
+export const getEventRecords = (appId: string, eventId: string, signal?: AbortSignal) => get<RecordPage>(`/events/${encodeURIComponent(eventId)}/records`, { app_id: appId }, signal)
 export async function getRecord(appId: string, recordId: string, signal?: AbortSignal): Promise<RecordSummary> {
   const result = await get<{ record: RecordSummary }>(`/records/${encodeURIComponent(recordId)}`, { app_id: appId }, signal)
   return result.record

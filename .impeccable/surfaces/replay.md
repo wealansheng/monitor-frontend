@@ -15,6 +15,8 @@ Mode: Operate. Ordinary extension of the Observability Atlas recorded in `DESIGN
 
 Audience: 研发运维人员定位错误前后的页面与操作。
 Task: 从独立操作回放列表筛选录制，或从错误详情打开关联片段，再定位错误时间点。
+
+Extension: 行为详情复用操作回放面板；错误、指定点击、页面退出使用各自时间标记。新事件释放的旧片段从起点展示并提示补传，保持初始暂停及原有窄屏布局。
 Content: 应用与时间范围内的录制摘要、完整性状态、用户/会话、页面路由、回放画面与错误标记；合成演示明确标识。
 Constraints: Vue 3 and the shared replay player; paused initial state, sandboxed replay, external playback controls, narrow-screen inspection without page-level overflow.
 

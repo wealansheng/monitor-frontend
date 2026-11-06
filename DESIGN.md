@@ -194,6 +194,8 @@ Panels and metric groups use gently curved 14px corners. Controls use 8px, rail 
 
 ## Replay inspection
 
+- Event-detail replay panels support both errors and behavior events, using the existing replay-panel inset and outline links. Generic event UUID links seek to error/custom-click markers; retained recordings open at the beginning with a notice explaining the later release event. Page-exit markers are labeled separately and old error-only metadata remains readable.
+
 - The recording list and detail extend the existing analysis panels; they do not add a new palette, type family or visual shell. Lists expose completeness, identity, route and error count before opening a recording.
 - The recorded page sits inside a contained viewport. Fit-to-window is the default; actual size, 150% and 200% allow scrolling within a focusable viewport capped at 60vh. The working page must not acquire horizontal overflow from the recorded frame.
 - Playback starts paused. Seeking and error-marker navigation pause playback. Play/pause, progress, elapsed time, speed and size controls stay outside the recorded page and wrap on narrow screens.
