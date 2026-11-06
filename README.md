@@ -63,6 +63,84 @@ npm run preview
 
 本地预览使用 8866 端口。生产部署必须提供同源 `/api/v1/dashboard` 反向代理与 History 回退；`MONITOR_BACKEND_URL` 是开发/预览代理配置，不会给静态产物提供后端转发服务。
 
+## 生产部署（dist + nginx）
+
+工作台是纯静态站点，接口固定请求同源 `/api/v1/dashboard`。生产环境由**同一个 nginx server** 同时提供 `dist` 和 `/api` 反向代理（`listen 80`、`listen 443 ssl`、`listen 8888 ssl`，三个入口内容一致）；管理令牌在页面里输入，不会进入构建产物。
+
+### 1. 本地打包
+
+前置：同级 SDK 已构建（`cd ../weils-monitor && pnpm install && pnpm build`），否则 `@weils-monitor/replay` 缺少 `dist`，构建会直接报错。
+
+```powershell
+cd D:\wealsCode\monitor-frontend
+.\deploy\build-dist.ps1
+```
+
+产物：`build/monitor-frontend-dist-<tag>.tar.gz` 与 `.sha256`，包内根目录即 `index.html` + `assets/`。
+
+### 2. 上传
+
+```bash
+mkdir -p /opt/monitor-frontend
+# 在本地项目目录执行
+scp build/monitor-frontend-dist-<tag>.tar.gz build/monitor-frontend-dist-<tag>.tar.gz.sha256 \
+    deploy/deploy-dist.sh deploy/nginx.conf \
+    root@<服务器IP>:/opt/monitor-frontend/
+```
+
+### 3. 首次部署
+
+```bash
+cd /opt/monitor-frontend
+
+# 同一 8888 端口只能有一个入口：先停用后端那份纯 API 配置
+mv /etc/nginx/conf.d/monitor-backend.conf /etc/nginx/conf.d/monitor-backend.conf.bak 2>/dev/null || true
+cp nginx.conf /etc/nginx/conf.d/monitor-frontend.conf
+vi /etc/nginx/conf.d/monitor-frontend.conf   # 改 server_name、证书路径；root 保持 /opt/monitor-frontend/dist
+nginx -t && systemctl reload nginx
+
+sha256sum -c monitor-frontend-dist-<tag>.tar.gz.sha256
+bash deploy-dist.sh monitor-frontend-dist-<tag>.tar.gz
+```
+
+> 后端此前也在同一 8888 上时，这一步会用工作台配置替代它；后端接口仍由新配置里的 `location /api/` 反代，行为不变。
+
+### 4. 升级 / 回滚
+
+```bash
+# 升级：本地重新打包并上传新 tag，然后
+sha256sum -c monitor-frontend-dist-<新tag>.tar.gz.sha256
+bash deploy-dist.sh monitor-frontend-dist-<新tag>.tar.gz
+
+# 回滚：上传旧 tag 的包，执行同一脚本
+```
+
+脚本解压到 `dist.new` → 原子替换 `/opt/monitor-frontend/dist` → `nginx -t` → reload；配置不合法时不会继续重启 nginx。
+
+### 5. 验证
+
+```bash
+curl -I http://forum.wealans.top/
+curl -I https://forum.wealans.top/
+curl -o /dev/null -w '%{http_code}\n' http://forum.wealans.top/errors
+curl -k -I https://forum.wealans.top:8888/
+curl -s http://forum.wealans.top/api/v1/dashboard/apps \
+  -H 'Authorization: Bearer <MONITOR_DASHBOARD_TOKEN>'
+```
+
+预期：`200`、`200`、`200`（History 回退）、`200`（8888 HTTPS）、应用列表 JSON。浏览器打开 `https://forum.wealans.top/`，点“连接数据源”输入令牌即可。
+
+### 6. 注意
+
+- **80 是明文**：管理令牌会以明文经过网络；优先使用 `https://forum.wealans.top/`，或继续用 8888。
+- 云服务器安全组需放行 TCP 80、443（以及 8888，若继续使用该端口）。
+- 443 上若已有其他站点（如旧的 `use-vite.conf`）且占用同一域名，需先备份移走那份配置，否则 nginx 会提示 `conflicting server name`，旧的先加载、继续返回 404。
+- 80 上还有其他站点时：`server_name` 不同可共存；若别的配置也声明了 `forum.wealans.top`，必须改成不同域名或合并到同一个 server 块。
+- 当前部署在根路径，不要改 Vite `base`；若要放到子路径，需同时改 `vite.config.ts` 的 `base` 与 nginx `location`。
+- `assets/` 文件名带内容哈希，配置了 30 天缓存；`index.html` 不缓存，发版后刷新即生效。
+- 后端健康检查 `GET /` 会被工作台首页替代，属预期；后端存活看 `docker compose ps` 或 `curl -I http://127.0.0.1:8080/`。
+- `deploy-dist.sh` 依赖 `nginx` 命令与 `systemctl`，需 root 执行。
+
 ## 错误源码定位
 
 事件详情中的“源码定位”展示完整调用栈，默认选中首个已还原帧。可以切换调用帧查看原始源码路径、行列号、错误行前后各 5 行及构建位置；原始上报字段和调用栈继续保留。源码以纯文本展示，错误行及列位置高亮，长行可横向滚动。
